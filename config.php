@@ -2,8 +2,8 @@
 // config.php
 $host = 'localhost';
 $dbname = 'car_rental'; // update when deploying
-$user = 'root';         // update when deploying
-$pass = '';             // update when deploying
+$user = 'car_rental_user';
+$pass = 'SecureP@ssw0rd123!';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $user, $pass);
