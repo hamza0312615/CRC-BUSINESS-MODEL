@@ -3,10 +3,7 @@
 session_start();
 require_once '../../config.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../../index.php");
-    exit;
-}
+require_once __DIR__ . '/../admin_auth.php';
 
 $stmt = $pdo->query("SELECT id, name, username FROM users WHERE role = 'driver' AND is_deleted = 0 ORDER BY name");
 $drivers = $stmt->fetchAll();
