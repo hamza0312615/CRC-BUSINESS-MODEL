@@ -3,10 +3,7 @@
 session_start();
 require_once '../../config.php';
 
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../../index.php");
-    exit;
-}
+require_once __DIR__ . '/../../includes/admin_auth.php';
 
 $stmt = $pdo->query("SELECT id, name, plate_number FROM cars ORDER BY name");
 $cars = $stmt->fetchAll();
