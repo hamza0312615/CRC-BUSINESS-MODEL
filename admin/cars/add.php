@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $stmt = $pdo->prepare("INSERT INTO cars (name, model, plate_number, color, private_notes) VALUES (?, ?, ?, ?, ?)");
             if ($stmt->execute([$name, $model, $plate_number, $color, $private_notes])) {
+                @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
                 $success = 'Car added successfully.';
             } else {
                 $error = 'Failed to add car.';
