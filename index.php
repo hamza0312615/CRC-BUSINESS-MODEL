@@ -2,6 +2,7 @@
 // index.php (Login Page)
 session_start();
 require_once 'config.php';
+require_once 'includes/auth.php';
 
 // If already logged in, redirect
 if (isset($_SESSION['user_id'])) {
@@ -21,11 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if ($username && $password) {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? AND is_deleted = 0");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
+        $user = authenticateUser($pdo, $username, $password);
 
-        if ($user && password_verify($password, $user['password'])) {
+        if ($user) {
             // Login success
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
