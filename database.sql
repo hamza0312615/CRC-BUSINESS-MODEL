@@ -54,9 +54,12 @@ CREATE TABLE `maintenance` (
   `photo_path` VARCHAR(255),
   `maintenance_date` DATE,
   `next_due_days` INT,
+  `due_date` DATE GENERATED ALWAYS AS (DATE_ADD(maintenance_date, INTERVAL next_due_days DAY)) STORED,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (`car_id`) REFERENCES `cars`(`id`)
 );
+
+CREATE INDEX `idx_maintenance_due_date` ON `maintenance` (`due_date`);
 
 CREATE TABLE `driver_calls` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,

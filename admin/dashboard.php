@@ -22,7 +22,7 @@ $unpaidWages = $stmt->fetchColumn() ?: 0;
 // Maintenance Due
 $stmt = $pdo->query("SELECT m.*, c.plate_number, c.name FROM maintenance m
                      JOIN cars c ON m.car_id = c.id
-                     WHERE DATE_ADD(m.maintenance_date, INTERVAL m.next_due_days DAY) <= CURDATE()");
+                     WHERE m.due_date <= CURDATE()");
 $dueMaintenances = $stmt->fetchAll();
 
 ?>
