@@ -11,29 +11,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $error = '';
 $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = $_POST['name'] ?? '';
-    $model = $_POST['model'] ?? '';
-    $plate_number = $_POST['plate_number'] ?? '';
-    $color = $_POST['color'] ?? '';
-    $private_notes = $_POST['private_notes'] ?? '';
+require_once '../../includes/cars.php';
 
-    if ($name && $plate_number) {
-        // Check plate number
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM cars WHERE plate_number = ?");
-        $stmt->execute([$plate_number]);
-        if ($stmt->fetchColumn() > 0) {
-            $error = 'Plate number already exists.';
-        } else {
-            $stmt = $pdo->prepare("INSERT INTO cars (name, model, plate_number, color, private_notes) VALUES (?, ?, ?, ?, ?)");
-            if ($stmt->execute([$name, $model, $plate_number, $color, $private_notes])) {
-                $success = 'Car added successfully.';
-            } else {
-                $error = 'Failed to add car.';
-            }
-        }
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $result = add_car($pdo, $_POST);
+    if ($result['success']) {
+        $success = $result['message'];
     } else {
-        $error = 'Name and Plate Number are required.';
+        $error = $result['error'];
     }
 }
 ?>
