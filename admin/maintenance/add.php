@@ -2,6 +2,7 @@
 // admin/maintenance/add.php
 session_start();
 require_once '../../config.php';
+require_once '../../includes/maintenance_logic.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../../index.php");
@@ -23,16 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $photo_path = null;
 
-    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../../uploads/maintenance/'; if (!is_dir($uploadDir)) { mkdir($uploadDir, 0777, true); }
-        $fileName = time() . '_' . basename($_FILES['photo']['name']);
-        $targetFile = $uploadDir . $fileName;
-
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
-            $photo_path = 'uploads/maintenance/' . $fileName;
-        } else {
-            $error = 'Failed to upload photo.';
-        }
+    $uploadResult = handle_maintenance_upload($_FILES['photo'] ?? null);
+    if ($uploadResult['success']) {
+        $photo_path = $uploadResult['path'];
+    } elseif ($uploadResult['error']) {
+        $error = $uploadResult['error'];
     }
 
     if ($car_id && $type && !$error) {
