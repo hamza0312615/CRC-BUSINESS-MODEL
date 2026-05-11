@@ -24,14 +24,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $photo_path = null;
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../../uploads/maintenance/'; if (!is_dir($uploadDir)) { mkdir($uploadDir, 0777, true); }
+        $uploadDir = '../../uploads/maintenance/'; if (!is_dir($uploadDir)) { mkdir($uploadDir, 0755, true); }
         $fileName = time() . '_' . basename($_FILES['photo']['name']);
         $targetFile = $uploadDir . $fileName;
 
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
-            $photo_path = 'uploads/maintenance/' . $fileName;
+        $fileExtension = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+
+        if (!in_array($fileExtension, $allowedExtensions)) {
+            $error = 'Invalid file type. Only JPG, JPEG, PNG, GIF, and WEBP files are allowed.';
         } else {
-            $error = 'Failed to upload photo.';
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
+                $photo_path = 'uploads/maintenance/' . $fileName;
+            } else {
+                $error = 'Failed to upload photo.';
+            }
         }
     }
 
