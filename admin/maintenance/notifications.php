@@ -8,12 +8,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-$stmt = $pdo->query("SELECT m.*, c.plate_number, c.name,
-                     DATE_ADD(m.maintenance_date, INTERVAL m.next_due_days DAY) as due_date
+$stmt = $pdo->query("SELECT m.*, c.plate_number, c.name
                      FROM maintenance m
                      JOIN cars c ON m.car_id = c.id
-                     WHERE DATE_ADD(m.maintenance_date, INTERVAL m.next_due_days DAY) <= CURDATE()
-                     ORDER BY due_date ASC");
+                     WHERE m.due_date <= CURDATE()
+                     ORDER BY m.due_date ASC");
 $dueMaintenances = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
