@@ -29,10 +29,9 @@ $success = '';
 $stmt = $pdo->query("
     SELECT u.id, u.name, u.username
     FROM users u
+    LEFT JOIN assignments a ON u.id = a.driver_id AND a.end_date IS NULL
     WHERE u.role = 'driver' AND u.is_deleted = 0
-    AND u.id NOT IN (
-        SELECT driver_id FROM assignments WHERE end_date IS NULL
-    )
+    AND a.driver_id IS NULL
 ");
 $availableDrivers = $stmt->fetchAll();
 
