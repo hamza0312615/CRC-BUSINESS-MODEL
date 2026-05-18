@@ -2,6 +2,7 @@
 // index.php (Login Page)
 session_start();
 require_once 'config.php';
+require_once 'includes/auth.php';
 
 // If already logged in, redirect
 if (isset($_SESSION['user_id'])) {
@@ -17,31 +18,26 @@ if (isset($_SESSION['user_id'])) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
+    $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    if ($username && $password) {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ? AND is_deleted = 0");
-        $stmt->execute([$username]);
-        $user = $stmt->fetch();
+    $authResult = authenticate_user($pdo, $username, $password);
 
-        if ($user && password_verify($password, $user['password'])) {
-            // Login success
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['role'] = $user['role'];
-            $_SESSION['name'] = $user['name'];
+    if ($authResult['success']) {
+        $user = $authResult['user'];
+        // Login success
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['role'] = $user['role'];
+        $_SESSION['name'] = $user['name'];
 
-            if ($user['role'] === 'admin') {
-                header("Location: admin/dashboard.php");
-            } else {
-                header("Location: driver/dashboard.php");
-            }
-            exit;
+        if ($user['role'] === 'admin') {
+            header("Location: admin/dashboard.php");
         } else {
-            $error = 'Invalid username or password.';
+            header("Location: driver/dashboard.php");
         }
+        exit;
     } else {
-        $error = 'Please enter both username and password.';
+        $error = $authResult['error'];
     }
 }
 ?>
