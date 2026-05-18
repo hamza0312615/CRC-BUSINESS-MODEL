@@ -9,21 +9,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// Stats
-$stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'driver' AND is_deleted = 0");
-$totalDrivers = $stmt->fetchColumn();
+require_once '../includes/dashboard_stats.php';
 
-$stmt = $pdo->query("SELECT COUNT(*) FROM cars");
-$totalCars = $stmt->fetchColumn();
-
-$stmt = $pdo->query("SELECT SUM(amount) FROM wages WHERE is_paid = 0");
-$unpaidWages = $stmt->fetchColumn() ?: 0;
-
-// Maintenance Due
-$stmt = $pdo->query("SELECT m.*, c.plate_number, c.name FROM maintenance m
-                     JOIN cars c ON m.car_id = c.id
-                     WHERE DATE_ADD(m.maintenance_date, INTERVAL m.next_due_days DAY) <= CURDATE()");
-$dueMaintenances = $stmt->fetchAll();
+// Stats & Maintenance Due
+$stats = getDashboardStats($pdo);
+$totalDrivers = $stats['totalDrivers'];
+$totalCars = $stats['totalCars'];
+$unpaidWages = $stats['unpaidWages'];
+$dueMaintenances = $stats['dueMaintenances'];
 
 ?>
 <!DOCTYPE html>
