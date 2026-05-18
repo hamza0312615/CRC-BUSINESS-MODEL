@@ -29,6 +29,7 @@ try {
     $pdo->commit();
 } catch (Exception $e) {
     $pdo->rollBack();
+    error_log("Error unassigning car: " . $e->getMessage());
 }
 
 header("Location: index.php");
