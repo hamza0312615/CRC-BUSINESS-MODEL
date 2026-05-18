@@ -24,14 +24,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $photo_path = null;
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../../uploads/maintenance/'; if (!is_dir($uploadDir)) { mkdir($uploadDir, 0777, true); }
-        $fileName = time() . '_' . basename($_FILES['photo']['name']);
-        $targetFile = $uploadDir . $fileName;
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $fileExtension = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
 
-        if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
-            $photo_path = 'uploads/maintenance/' . $fileName;
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = finfo_file($finfo, $_FILES['photo']['tmp_name']);
+        finfo_close($finfo);
+
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+        if (in_array($fileExtension, $allowedExtensions) && in_array($mimeType, $allowedMimeTypes)) {
+            $uploadDir = '../../uploads/maintenance/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $fileName = time() . '_' . basename($_FILES['photo']['name']);
+            $targetFile = $uploadDir . $fileName;
+
+            if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetFile)) {
+                $photo_path = 'uploads/maintenance/' . $fileName;
+            } else {
+                $error = 'Failed to upload photo.';
+            }
         } else {
-            $error = 'Failed to upload photo.';
+            $error = 'Invalid file type. Only JPG, PNG, GIF, and WEBP images are allowed.';
         }
     }
 
