@@ -23,7 +23,6 @@ if (!$car || $car['status'] !== 'Available') {
 }
 
 $error = '';
-$success = '';
 
 // Fetch available drivers (drivers not currently having an active assignment)
 $stmt = $pdo->query("
