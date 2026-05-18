@@ -14,6 +14,7 @@ if (isset($_GET['id'])) {
 
     $stmt = $pdo->prepare("UPDATE wages SET is_paid = 1, paid_date = ? WHERE id = ?");
     $stmt->execute([$paid_date, $id]);
+    @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
 }
 
 header("Location: index.php");

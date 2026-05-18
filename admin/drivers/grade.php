@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $success = 'Grade updated successfully.';
         $driver['grade'] = $grade;
         $driver['grade_comments'] = $grade_comments;
+        @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
     } else {
         $error = 'Failed to update grade.';
     }

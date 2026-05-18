@@ -26,6 +26,8 @@ try {
     $stmt = $pdo->prepare("UPDATE cars SET status = 'Available' WHERE id = ?");
     $stmt->execute([$car_id]);
 
+    @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
+
     $pdo->commit();
 } catch (Exception $e) {
     $pdo->rollBack();

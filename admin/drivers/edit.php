@@ -40,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $driver['phone'] = $phone;
             $driver['cnic'] = $cnic;
             $driver['joining_date'] = $joining_date;
+            @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
         } else {
             $error = 'Failed to update driver.';
         }

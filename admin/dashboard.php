@@ -10,14 +10,31 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Stats
-$stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'driver' AND is_deleted = 0");
-$totalDrivers = $stmt->fetchColumn();
+$cacheFile = sys_get_temp_dir() . '/dashboard_cache.json';
+$cacheTime = 300; // 5 minutes
 
-$stmt = $pdo->query("SELECT COUNT(*) FROM cars");
-$totalCars = $stmt->fetchColumn();
+if (file_exists($cacheFile) && (time() - filemtime($cacheFile) < $cacheTime)) {
+    $cacheData = json_decode(file_get_contents($cacheFile), true);
+    $totalDrivers = $cacheData['totalDrivers'] ?? 0;
+    $totalCars = $cacheData['totalCars'] ?? 0;
+    $unpaidWages = $cacheData['unpaidWages'] ?? 0;
+} else {
+    $stmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'driver' AND is_deleted = 0");
+    $totalDrivers = $stmt->fetchColumn();
 
-$stmt = $pdo->query("SELECT SUM(amount) FROM wages WHERE is_paid = 0");
-$unpaidWages = $stmt->fetchColumn() ?: 0;
+    $stmt = $pdo->query("SELECT COUNT(*) FROM cars");
+    $totalCars = $stmt->fetchColumn();
+
+    $stmt = $pdo->query("SELECT SUM(amount) FROM wages WHERE is_paid = 0");
+    $unpaidWages = $stmt->fetchColumn() ?: 0;
+
+    $cacheData = [
+        'totalDrivers' => $totalDrivers,
+        'totalCars' => $totalCars,
+        'unpaidWages' => $unpaidWages
+    ];
+    file_put_contents($cacheFile, json_encode($cacheData));
+}
 
 // Maintenance Due
 $stmt = $pdo->query("SELECT m.*, c.plate_number, c.name FROM maintenance m
