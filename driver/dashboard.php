@@ -2,6 +2,7 @@
 // driver/dashboard.php
 session_start();
 require_once '../config.php';
+require_once '../includes/driver_functions.php';
 
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'driver') {
     header("Location: ../index.php");
@@ -16,14 +17,7 @@ $stmt->execute([$driver_id]);
 $unpaidWages = $stmt->fetchColumn() ?: 0;
 
 // Get current car
-$stmt = $pdo->prepare("
-    SELECT c.name, c.plate_number
-    FROM assignments a
-    JOIN cars c ON a.car_id = c.id
-    WHERE a.driver_id = ? AND a.end_date IS NULL
-");
-$stmt->execute([$driver_id]);
-$currentCar = $stmt->fetch();
+$currentCar = get_current_assigned_car($pdo, $driver_id);
 
 ?>
 <!DOCTYPE html>
