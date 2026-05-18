@@ -30,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("INSERT INTO users (role, username, password, name, phone, cnic, joining_date) VALUES ('driver', ?, ?, ?, ?, ?, ?)");
             if ($stmt->execute([$username, $hashedPassword, $name, $phone, $cnic, $joining_date])) {
                 $success = 'Driver added successfully.';
+                @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
             } else {
                 $error = 'Failed to add driver.';
             }

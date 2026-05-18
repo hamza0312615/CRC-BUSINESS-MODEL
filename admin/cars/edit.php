@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $car['color'] = $color;
             $car['status'] = $status;
             $car['private_notes'] = $private_notes;
+            @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
         } else {
             $error = 'Failed to update car.';
         }

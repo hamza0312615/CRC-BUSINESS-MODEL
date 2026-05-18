@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("INSERT INTO wages (driver_id, date, amount) VALUES (?, ?, ?)");
         if ($stmt->execute([$driver_id, $date, $amount])) {
             $success = 'Wage recorded successfully.';
+            @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
         } else {
             $error = 'Failed to record wage.';
         }

@@ -13,6 +13,7 @@ if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $stmt = $pdo->prepare("UPDATE users SET is_deleted = 1 WHERE id = ? AND role = 'driver'");
     $stmt->execute([$id]);
+    @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
     header("Location: index.php");
     exit;
 }

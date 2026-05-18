@@ -52,6 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $pdo->prepare("UPDATE cars SET status = 'Assigned' WHERE id = ?");
             $stmt->execute([$car_id]);
 
+            @unlink(sys_get_temp_dir() . '/dashboard_cache.json');
+
             $pdo->commit();
             header("Location: index.php");
             exit;
